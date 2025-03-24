@@ -159,6 +159,14 @@ class BlockchainRequest:
         args={"operational": Address},
     )
 
+    # PaymasterManager
+
+    deploy_paymaster = ContractTransaction(
+        contract="PaymasterManager",
+        function="deployPaymaster",
+        args={},
+    )
+
     # Paranets
     register_paranet = ContractTransaction(
         contract="Paranet",

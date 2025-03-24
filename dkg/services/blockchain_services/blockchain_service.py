@@ -17,6 +17,7 @@ class BlockchainService(Module):
     _owner = Method(BlockchainRequest.owner_of)
     _get_contract_address = Method(BlockchainRequest.get_contract_address)
     _get_current_allowance = Method(BlockchainRequest.allowance)
+    _deploy_paymaster = Method(BlockchainRequest.deploy_paymaster)
     _increase_allowance = Method(BlockchainRequest.increase_allowance)
     _decrease_allowance = Method(BlockchainRequest.decrease_allowance)
     _create_knowledge_collection = Method(BlockchainRequest.create_knowledge_collection)
@@ -29,6 +30,24 @@ class BlockchainService(Module):
         BlockchainRequest.get_stake_weighted_average_ask
     )
     _get_block = Method(BlockchainRequest.get_block)
+
+    def create_paymaster(
+        self,
+    ):
+        receipt = self._deploy_paymaster()
+
+        event_data = self.manager.blockchain_provider.decode_logs_event(
+            receipt=receipt,
+            contract_name="PaymasterManager",
+            event_name="PaymasterDeployed",
+        )
+
+        deployer = getattr(event_data[0].get("args", {}), "deployer", None)
+        paymaster_address = getattr(
+            event_data[0].get("args", {}), "paymasterAddress", None
+        )
+
+        return deployer, paymaster_address
 
     def decrease_knowledge_collection_allowance(
         self,
